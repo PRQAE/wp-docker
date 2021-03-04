@@ -1,50 +1,28 @@
 version: '3.6'
 services:
   nginx:
-    image: nginx:latest
-    container_name: ${APP_NAME}-nginx
+    image: nginx:1.18
     ports:
       - '80:80'
       - '443:443'
     volumes:
       - "./nginx/:/etc/nginx/templates/"
       - ./src:/var/www/html:rw,cached
-      - ./certs:/etc/certs
     environment:
       - "NGINX_ENVSUBST_TEMPLATE_SUFFIX=.conf"
       - "DOMAIN=${DOMAIN}"
-    depends_on:
-      - wordpress
     restart: always
 
-  mysql:
-    image: mariadb
-    container_name: ${APP_NAME}-mysql
-    command: --lower_case_table_names=2
+    website:
+    image: php:8.0-fpm
     volumes:
-       - './data/db:/var/lib/mysql:delegated'
-    environment:
-      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
-      - MYSQL_DATABASE=${DB_NAME}
-    restart: always
+      - ./src:/var/www/html
     ports:
-      - '3306:3306'
-
-  wordpress:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: ${APP_NAME}-wordpress
-    volumes:
-      - ./src:/var/www/html:rw,cached
-      - ./config/php.ini:/usr/local/etc/php/conf.d/php.ini
-    depends_on:
-      - mysql
-    restart: always
-
+      - 5000:80
+      
   composer:
     image: composer
-    container_name: ${APP_NAME}-composer
+    container_name: composer
     working_dir: /var/www/html
     restart: 'no'
     volumes:
