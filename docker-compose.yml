@@ -1,19 +1,7 @@
 version: '3.6'
 services:
-  nginx:
-    image: nginx:1.18
-    ports:
-      - '80:80'
-      - '443:443'
-    volumes:
-      - "./nginx/:/etc/nginx/templates/"
-      - ./src:/var/www/html:rw,cached
-    environment:
-      - "NGINX_ENVSUBST_TEMPLATE_SUFFIX=.conf"
-      - "DOMAIN=${DOMAIN}"
-    restart: always
 
-    website:
+  website:
     image: php:8.0-fpm
     volumes:
       - ./src:/var/www/html
